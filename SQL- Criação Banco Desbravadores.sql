@@ -51,6 +51,9 @@ data_expiracao DATE,
 status_convite VARCHAR(45),
 CONSTRAINT chkStatusConvite CHECK (status_convite in('expirado','aceito','revogado','pendente')),
 
+id_unidade INT,
+
+CONSTRAINT fkConviteUnidade FOREIGN KEY (fk_unidade, id_clube) REFERENCES Unidade(id_unidade, id_clube),
 CONSTRAINT fkConviteClube FOREIGN KEY (id_clube) REFERENCES Clube(id_clube)
 )AUTO_INCREMENT = 10;
 
