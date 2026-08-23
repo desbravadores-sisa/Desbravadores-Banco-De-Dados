@@ -1,147 +1,148 @@
- -- Criação do Banco 
- -- Reset no banco descomentar essa linha()
-DROP DATABASE IF EXISTS desbravadores;
-CREATE DATABASE IF NOT EXISTS desbravadores;
-USE desbravadores;
+-- Reset limpo
+DROP DATABASE IF EXISTS clube_desbravadores;
+CREATE DATABASE clube_desbravadores CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci;
+USE clube_desbravadores;
 
-/*
-Criação das Tabelas
-*/
+-- -----------------------------------------------------
+-- 1. Tabelas Base
+-- -----------------------------------------------------
+CREATE TABLE Clube (
+  id_clube INT PRIMARY KEY AUTO_INCREMENT,
+  nome VARCHAR(100) NOT NULL,
+  regiao VARCHAR(100),
+  cidade VARCHAR(100),
+  data_criacao DATETIME DEFAULT CURRENT_TIMESTAMP
+);
 
-CREATE TABLE Clube(
-id_clube INT PRIMARY KEY AUTO_INCREMENT,
+CREATE TABLE Perfil (
+  id_perfil INT PRIMARY KEY AUTO_INCREMENT,
+  nome VARCHAR(45) NOT NULL UNIQUE,
+  descricao VARCHAR(100)
+);
 
-nome VARCHAR(100) NOT NULL,
+CREATE TABLE Unidade (
+  id_unidade INT PRIMARY KEY AUTO_INCREMENT,
+  id_clube INT NOT NULL,
+  nome VARCHAR(100) NOT NULL,
+  genero VARCHAR(45),
+  idade_minima INT,
+  idade_maxima INT,
+  
+  CONSTRAINT fk_Unidade_Clube FOREIGN KEY (id_clube) REFERENCES Clube (id_clube)
+);
 
-regiao VARCHAR(100),
+-- -----------------------------------------------------
+-- 2. Pessoas (Usuários e Desbravadores)
+-- -----------------------------------------------------
+CREATE TABLE Usuario (
+  id_usuario INT PRIMARY KEY AUTO_INCREMENT,
+  id_clube INT NOT NULL,
+  id_perfil INT NOT NULL,
+  id_unidade INT, -- Pode ser NULL se for Diretoria
+  nome VARCHAR(100) NOT NULL,
+  email VARCHAR(100) NOT NULL UNIQUE,
+  senha VARCHAR(256) NOT NULL,
+  ativo BOOLEAN DEFAULT TRUE,
+  
+  CONSTRAINT fk_Usuario_Clube FOREIGN KEY (id_clube) REFERENCES Clube (id_clube),
+  CONSTRAINT fk_Usuario_Perfil FOREIGN KEY (id_perfil) REFERENCES Perfil (id_perfil),
+  CONSTRAINT fk_Usuario_Unidade FOREIGN KEY (id_unidade) REFERENCES Unidade (id_unidade)
+);
 
-cidade VARCHAR(100)
-)AUTO_INCREMENT = 10000;
+CREATE TABLE Desbravador (
+  id_desbravador INT PRIMARY KEY AUTO_INCREMENT,
+  id_clube INT NOT NULL,
+  id_unidade INT NOT NULL,
+  nome VARCHAR(100) NOT NULL,
+  data_nascimento DATE NOT NULL,
+  genero VARCHAR(45),
+  data_admissao DATETIME DEFAULT CURRENT_TIMESTAMP,
+  ativo BOOLEAN DEFAULT TRUE,
+  
+  CONSTRAINT fk_Desbravador_Clube FOREIGN KEY (id_clube) REFERENCES Clube (id_clube),
+  CONSTRAINT fk_Desbravador_Unidade FOREIGN KEY (id_unidade) REFERENCES Unidade (id_unidade)
+);
 
-CREATE TABLE Unidade(
-id_unidade INT AUTO_INCREMENT,
+-- -----------------------------------------------------
+-- 3. Catálogo (Cadernos e Tarefas)
+-- -----------------------------------------------------
+CREATE TABLE Caderno (
+  id_caderno INT PRIMARY KEY AUTO_INCREMENT,
+  id_clube INT NOT NULL,
+  nome VARCHAR(100) NOT NULL,
+  idade_alvo INT NOT NULL,
+  
+  CONSTRAINT fk_Caderno_Clube FOREIGN KEY (id_clube) REFERENCES Clube (id_clube)
+);
 
-id_clube INT,
+CREATE TABLE Tarefa (
+  id_tarefa INT PRIMARY KEY AUTO_INCREMENT,
+  id_clube INT NOT NULL,
+  id_caderno INT, -- Se for NULL, é tarefa do Clube. Se tiver ID, é de Caderno.
+  titulo VARCHAR(150) NOT NULL,
+  descricao TEXT,
+  tipo_tarefa VARCHAR(20) NOT NULL, -- 'CLUBE' ou 'CADERNO'
+  pontuacao INT DEFAULT 0,
+  prazo_padrao DATE,
+  
+  CONSTRAINT chk_Tipo_Tarefa CHECK (tipo_tarefa IN ('CLUBE', 'CADERNO')),
+  CONSTRAINT fk_Tarefa_Clube FOREIGN KEY (id_clube) REFERENCES Clube (id_clube),
+  CONSTRAINT fk_Tarefa_Caderno FOREIGN KEY (id_caderno) REFERENCES Caderno (id_caderno)
+);
 
-CONSTRAINT pkCompostaUnidade PRIMARY KEY(id_unidade, id_clube),
+-- -----------------------------------------------------
+-- 4. Execução (O Kanban)
+-- -----------------------------------------------------
+-- Kanban individual para os Cadernos
+CREATE TABLE Desbravador_Tarefa (
+  id_desbravador_tarefa INT PRIMARY KEY AUTO_INCREMENT,
+  id_desbravador INT NOT NULL,
+  id_tarefa INT NOT NULL,
+  status_kanban VARCHAR(45) DEFAULT 'A FAZER',
+  prazo_entrega DATETIME,
+  data_conclusao DATETIME,
+  
+  CONSTRAINT chk_Status_Desbravador CHECK (status_kanban IN ('A FAZER', 'EM ANDAMENTO', 'EM REVISAO', 'CONCLUIDA')),
+  CONSTRAINT fk_DesbTarefa_Desbravador FOREIGN KEY (id_desbravador) REFERENCES Desbravador (id_desbravador),
+  CONSTRAINT fk_DesbTarefa_Tarefa FOREIGN KEY (id_tarefa) REFERENCES Tarefa (id_tarefa)
+);
 
-nome VARCHAR(100),
+-- Kanban em grupo para as Tarefas do Clube
+CREATE TABLE Unidade_Tarefa (
+  id_unidade_tarefa INT PRIMARY KEY AUTO_INCREMENT,
+  id_unidade INT NOT NULL,
+  id_tarefa INT NOT NULL,
+  status_kanban VARCHAR(45) DEFAULT 'A FAZER',
+  prazo_entrega DATETIME,
+  data_conclusao DATETIME,
+  
+  CONSTRAINT chk_Status_Unidade CHECK (status_kanban IN ('A FAZER', 'EM ANDAMENTO', 'EM REVISAO', 'CONCLUIDA')),
+  CONSTRAINT fk_UniTarefa_Unidade FOREIGN KEY (id_unidade) REFERENCES Unidade (id_unidade),
+  CONSTRAINT fk_UniTarefa_Tarefa FOREIGN KEY (id_tarefa) REFERENCES Tarefa (id_tarefa)
+);
 
-pontuacao INT,
-
-CONSTRAINT fkUnidadeClube FOREIGN KEY (id_clube) REFERENCES Clube(id_clube)
-)AUTO_INCREMENT = 1000;
-
-CREATE TABLE Convite(
-id_convite INT AUTO_INCREMENT,
-
-id_clube INT,
-
-CONSTRAINT pkCompostaConvite PRIMARY KEY(id_convite,id_clube),
-
-email VARCHAR(100),
-
-token CHAR(64),
-
-tipo_conta VARCHAR(45),
-CONSTRAINT chkTipoContaConvite CHECK (tipo_conta in('DIRETOR','CONSELHEIRO')),
-
-data_expiracao DATE,
-
-status_convite VARCHAR(45),
-CONSTRAINT chkStatusConvite CHECK (status_convite in('expirado','aceito','revogado','pendente')),
-
-id_unidade INT,
-
-CONSTRAINT fkConviteUnidade FOREIGN KEY (fk_unidade, id_clube) REFERENCES Unidade(id_unidade, id_clube),
-CONSTRAINT fkConviteClube FOREIGN KEY (id_clube) REFERENCES Clube(id_clube)
-)AUTO_INCREMENT = 10;
-
-CREATE TABLE Usuario(
-id_usuario INT AUTO_INCREMENT,
-
-id_clube INT,
-
-CONSTRAINT pkCompostaUsuario PRIMARY KEY(id_usuario,id_clube),
-
-id_unidade INT,
-
-nome VARCHAR(100),
-
-email VARCHAR(100),
-
-senha VARCHAR(256),
-
-tipo_conta VARCHAR(45),
-CONSTRAINT chkTipoContaUsuario CHECK (tipo_conta in('diretor','conselheiro')),
-
-CONSTRAINT fkUsuarioUnidade FOREIGN KEY (id_unidade, id_clube) REFERENCES Unidade(id_unidade, id_clube)
-)AUTO_INCREMENT = 12873;
-
-CREATE TABLE Tarefa(
-id_tarefa INT AUTO_INCREMENT,
-
-id_clube INT,
-
-CONSTRAINT pkCompostaTarefa PRIMARY KEY(id_tarefa,id_clube),
-
-nome VARCHAR(100),
-
-descricao TEXT,
-
-pontuacao INT,
-
-prazo_entrega DATE,
-
-data_criacao DATETIME DEFAULT CURRENT_TIMESTAMP,
-
-CONSTRAINT fkTarefaClube FOREIGN KEY (id_clube) REFERENCES Clube(id_clube)
-)AUTO_INCREMENT = 1234;
-
-CREATE TABLE TarefaUnidade(
-id_tarefa_unidade INT AUTO_INCREMENT,
-
-id_tarefa INT,
-
-id_unidade INT,
-
-CONSTRAINT pkCompostaTarefaUnidade PRIMARY KEY(id_tarefa_unidade,id_tarefa,id_unidade),
-
-id_clube_tarefa INT,
-
-id_clube_unidade INT,
-
-status_kanban VARCHAR(45),
-CONSTRAINT chkTarefaUnidade CHECK(status_kanban in('a fazer','em andamento','em revisao','concluido')),
-
-CONSTRAINT fkTarefaUnidadeTarefa FOREIGN KEY (id_tarefa,id_clube_tarefa) REFERENCES Tarefa(id_tarefa,id_clube),
-CONSTRAINT fkTarefaUnidadeUnidade FOREIGN KEY (id_unidade,id_clube_unidade) REFERENCES Unidade(id_unidade,id_clube)
-)AUTO_INCREMENT = 1273;
-
-CREATE TABLE Evidencia(
-id_evidencia INT AUTO_INCREMENT,
-
-id_tarefa_unidade INT,
-
-CONSTRAINT pkCompostaEvidencia PRIMARY KEY(id_evidencia,id_tarefa_unidade),
-
-id_tarefa INT,
-
-id_unidade INT,
-
-id_clube INT,
-
-nome VARCHAR(100),
-
-urls3 TEXT,
-
-data_upload DATETIME DEFAULT CURRENT_TIMESTAMP,
-
-CONSTRAINT fkEvidenciaTarefaUnidade FOREIGN KEY (id_tarefa_unidade, id_tarefa, id_unidade) REFERENCES TarefaUnidade(id_tarefa_unidade, id_tarefa, id_unidade)
-)AUTO_INCREMENT = 1876273;
-
+-- -----------------------------------------------------
+-- 5. Evidências
+-- -----------------------------------------------------
+CREATE TABLE Evidencia (
+  id_evidencia INT PRIMARY KEY AUTO_INCREMENT,
+  id_desbravador_tarefa INT, -- Preenchido se a evidência for de Caderno
+  id_unidade_tarefa INT,     -- Preenchido se a evidência for de Clube
+  url_s3 VARCHAR(500) NOT NULL,
+  comentario_feedback TEXT,
+  data_envio DATETIME DEFAULT CURRENT_TIMESTAMP,
+  
+  CONSTRAINT fk_Evidencia_DesbTarefa FOREIGN KEY (id_desbravador_tarefa) REFERENCES Desbravador_Tarefa (id_desbravador_tarefa),
+  CONSTRAINT fk_Evidencia_UniTarefa FOREIGN KEY (id_unidade_tarefa) REFERENCES Unidade_Tarefa (id_unidade_tarefa),
+  
+  -- Garante que a evidência pertence a um ou a outro, nunca aos dois ou a nenhum
+  CONSTRAINT chk_Evidencia_Origem CHECK (
+      (id_desbravador_tarefa IS NOT NULL AND id_unidade_tarefa IS NULL) OR 
+      (id_desbravador_tarefa IS NULL AND id_unidade_tarefa IS NOT NULL)
+  )
+);
 
 DROP USER IF EXISTS jpauser;
 CREATE USER 'jpauser'@'%' IDENTIFIED BY 'senha-segura123';
-GRANT INSERT,SELECT,UPDATE,DELETE ON desbravadores.* TO 'jpauser'@'%';
-FLUSH PRIVILEGES; 
+GRANT INSERT, SELECT, UPDATE, DELETE ON clube_desbravadores.* TO 'jpauser'@'%';
+FLUSH PRIVILEGES;
