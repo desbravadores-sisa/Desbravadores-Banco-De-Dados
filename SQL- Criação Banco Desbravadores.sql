@@ -184,6 +184,27 @@ CREATE TABLE Checklist_Caderno (
 );
 
 -- ==============================================================================
+-- 6. NOTIFICAÇÕES (MENSAGERIA INTERNA DO SISTEMA)
+-- ==============================================================================
+CREATE TABLE Notificacao (
+  id_notificacao INT PRIMARY KEY AUTO_INCREMENT,
+  id_usuario INT NOT NULL,
+  id_clube INT NOT NULL,
+  
+  titulo VARCHAR(150) NOT NULL,
+  mensagem TEXT NOT NULL,
+
+  tipo_referencia VARCHAR(45), 
+  id_referencia INT,           
+  
+  lida BOOLEAN DEFAULT FALSE,
+  data_criacao DATETIME DEFAULT CURRENT_TIMESTAMP,
+  
+  CONSTRAINT fk_Notificacao_Usuario FOREIGN KEY (id_usuario) REFERENCES Usuario (id_usuario),
+  CONSTRAINT fk_Notificacao_Clube FOREIGN KEY (id_clube) REFERENCES Clube (id_clube)
+);
+
+-- ==============================================================================
 -- CONFIGURAÇÃO DE USUÁRIO DO BANCO DE DADOS
 -- ==============================================================================
 DROP USER IF EXISTS jpauser;
