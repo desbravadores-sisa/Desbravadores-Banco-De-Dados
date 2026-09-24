@@ -71,3 +71,74 @@ INSERT INTO Desbravador (id_clube, id_unidade, nome, data_nascimento, genero) VA
 (1, 4, 'Juliana Resende', '2012-07-28', 'Feminino'),
 (1, 4, 'Karina Lemos', '2013-04-09', 'Feminino'),
 (1, 4, 'Leticia Moraes', '2011-03-23', 'Feminino');
+
+
+INSERT INTO Caderno (id_clube, nome, idade_alvo) VALUES 
+(1, 'Amigo', 10),
+(1, 'Companheiro', 11),
+(1, 'Pesquisador', 12),
+(1, 'Pioneiro', 13),
+(1, 'Excursionista', 14),
+(1, 'Guia', 15);
+
+-- Inserindo Tarefas do Caderno 'Amigo' (ID 1) - 6 Requisitos
+INSERT INTO Tarefa (id_clube, id_caderno, titulo, descricao, tipo_tarefa, pontuacao) VALUES
+(1, 1, 'Voto e Lei dos Desbravadores', 'Decorar e explicar o significado do Voto e da Lei.', 'CADERNO', 10),
+(1, 1, 'Leitura Bíblica: Gênesis', 'Ler o livro de Gênesis conforme o ano bíblico.', 'CADERNO', 15),
+(1, 1, 'Especialidade de Acampamento I', 'Completar os requisitos teóricos e práticos.', 'CADERNO', 20),
+(1, 1, 'Nós e Amarras Básicas', 'Fazer e explicar o uso de 5 nós básicos.', 'CADERNO', 10),
+(1, 1, 'História dos Desbravadores', 'Contar a história de como o clube começou.', 'CADERNO', 10),
+(1, 1, 'Preservação da Natureza', 'Participar de um projeto ecológico no bairro.', 'CADERNO', 20);
+
+-- Inserindo Tarefas do Caderno 'Companheiro' (ID 2) - 7 Requisitos
+INSERT INTO Tarefa (id_clube, id_caderno, titulo, descricao, tipo_tarefa, pontuacao) VALUES
+(1, 2, 'Alvo, Lema e Voto à Bíblia', 'Memorizar e recitar para o conselheiro.', 'CADERNO', 10),
+(1, 2, 'Leitura Bíblica: Êxodo', 'Acompanhar a leitura no clube bíblico.', 'CADERNO', 15),
+(1, 2, 'Primeiros Socorros Básicos', 'Saber como tratar cortes e queimaduras leves.', 'CADERNO', 20),
+(1, 2, 'Culinária de Acampamento', 'Fazer uma fogueira segura e cozinhar uma refeição.', 'CADERNO', 20),
+(1, 2, 'Uso de Bússola', 'Aprender a encontrar os pontos cardeais.', 'CADERNO', 15),
+(1, 2, 'Participar de Investidura', 'Estar presente na cerimônia de admissão.', 'CADERNO', 10),
+(1, 2, 'Projeto Comunitário', 'Arrecadar alimentos ou roupas para doação.', 'CADERNO', 20);
+
+-- Inserindo Tarefas do Caderno 'Pesquisador' (ID 3) - 6 Requisitos
+INSERT INTO Tarefa (id_clube, id_caderno, titulo, descricao, tipo_tarefa, pontuacao) VALUES
+(1, 3, 'Evangelhos', 'Leitura guiada dos livros de Mateus e Marcos.', 'CADERNO', 15),
+(1, 3, 'Especialidade de Mapa e Bússola', 'Concluir a especialidade com prova prática.', 'CADERNO', 25),
+(1, 3, 'Acampamento de Fim de Semana', 'Dormir ao menos duas noites em barraca.', 'CADERNO', 30),
+(1, 3, 'Estudo sobre a Criação', 'Preparar uma apresentação sobre os 7 dias.', 'CADERNO', 15),
+(1, 3, 'Caminhada de 5km', 'Participar de uma caminhada com a unidade.', 'CADERNO', 20),
+(1, 3, 'Arte de Acampar', 'Saber montar, desmontar e limpar uma barraca.', 'CADERNO', 15);
+
+-- Inserindo Tarefas do Caderno 'Pioneiro' (ID 4) - 6 Requisitos
+INSERT INTO Tarefa (id_clube, id_caderno, titulo, descricao, tipo_tarefa, pontuacao) VALUES
+(1, 4, 'Clube de Leitura', 'Ler o livro do ano recomendado pela Divisão.', 'CADERNO', 20),
+(1, 4, 'Estudo sobre Temperança', 'Fazer um cartaz sobre os perigos das drogas.', 'CADERNO', 15),
+(1, 4, 'Fogueiras e Acampamento', 'Saber construir três tipos diferentes de fogueiras.', 'CADERNO', 20),
+(1, 4, 'Orientação Avançada', 'Fazer uma trilha usando apenas bússola e mapa.', 'CADERNO', 25),
+(1, 4, 'Pioneirismo', 'Construir um móvel de acampamento usando amarras.', 'CADERNO', 30),
+(1, 4, 'Liderança Jovem', 'Ajudar a dirigir um culto ou devocional.', 'CADERNO', 20);
+
+-- Inserindo Tarefas do Caderno 'Excursionista' (ID 5) - 5 Requisitos
+INSERT INTO Tarefa (id_clube, id_caderno, titulo, descricao, tipo_tarefa, pontuacao) VALUES
+(1, 5, 'Debate Cristão', 'Participar de um debate sobre ética cristã.', 'CADERNO', 15),
+(1, 5, 'Resgate Básico', 'Concluir a especialidade de resgate e maca.', 'CADERNO', 25),
+(1, 5, 'Fogueira em Condições Adversas', 'Acender uma fogueira debaixo de chuva.', 'CADERNO', 30),
+(1, 5, 'Caminhada de 10km', 'Completar o percurso mantendo registro.', 'CADERNO', 30),
+(1, 5, 'Estudo Profético', 'Compreender os pilares básicos de Daniel.', 'CADERNO', 20);
+
+-- Inserindo Tarefas do Caderno 'Guia' (ID 6) - 6 Requisitos
+INSERT INTO Tarefa (id_clube, id_caderno, titulo, descricao, tipo_tarefa, pontuacao) VALUES
+(1, 6, 'Liderança de Unidade', 'Atuar como capitão de unidade por um mês.', 'CADERNO', 30),
+(1, 6, 'Especialidade de Liderança', 'Completar todos os requisitos teóricos.', 'CADERNO', 25),
+(1, 6, 'Atividade Missionária', 'Organizar um pequeno grupo ou ação social.', 'CADERNO', 35),
+(1, 6, 'Primeiros Socorros Avançados', 'Saber realizar RCP e imobilização de fraturas.', 'CADERNO', 30),
+(1, 6, 'Mensagens aos Jovens', 'Leitura e resumo crítico do livro.', 'CADERNO', 20),
+(1, 6, 'Sobrevivência na Selva', 'Passar uma noite no mato com equipamento mínimo.', 'CADERNO', 40);
+
+-- Convite para Conselheiro (Vinculado à Unidade 2 - Leões)
+INSERT INTO Convite (id_clube, id_perfil, id_unidade, email, token, status_convite, data_expiracao) VALUES 
+(1, 2, 2, 'conselheiro.mock@gmail.com', 't0k3nM0ckC0ns3lh31r0B4s364g3r4d0Ex3mpl0', 'PENDENTE', '2026-09-25 23:59:59');
+
+-- Convite para Diretoria (Sem unidade vinculada)
+INSERT INTO Convite (id_clube, id_perfil, id_unidade, email, token, status_convite, data_expiracao) VALUES 
+(1, 1, NULL, 'diretor.mock@gmail.com', 't0k3nM0ckD1r3t0r14B4s364g3r4d0Ex3mpl0', 'PENDENTE', '2026-09-25 23:59:59');
