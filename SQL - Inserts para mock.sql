@@ -137,8 +137,8 @@ INSERT INTO Tarefa (id_clube, id_caderno, titulo, descricao, tipo_tarefa, pontua
 
 -- Convite para Conselheiro (Vinculado à Unidade 2 - Leões)
 INSERT INTO Convite (id_clube, id_perfil, id_unidade, email, token, status_convite, data_expiracao) VALUES 
-(1, 2, 2, 'conselheiro.mock@gmail.com', 't0k3nM0ckC0ns3lh31r0B4s364g3r4d0Ex3mpl0', 'PENDENTE', '2026-09-25 23:59:59');
+(1, 2, 2, 'conselheiro.mock@gmail.com', 't0k3nM0ckC0ns3lh31r0B4s364g3r4d0Ex3mpl0', 'PENDENTE', '2027-09-25 23:59:59');
 
 -- Convite para Diretoria (Sem unidade vinculada)
 INSERT INTO Convite (id_clube, id_perfil, id_unidade, email, token, status_convite, data_expiracao) VALUES 
-(1, 1, NULL, 'diretor.mock@gmail.com', 't0k3nM0ckD1r3t0r14B4s364g3r4d0Ex3mpl0', 'PENDENTE', '2026-09-25 23:59:59');
+(1, 1, NULL, 'diretor.mock@gmail.com', 't0k3nM0ckD1r3t0r14B4s364g3r4d0Ex3mpl0', 'PENDENTE', '2027-09-25 23:59:59');

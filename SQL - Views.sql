@@ -22,3 +22,4 @@ SELECT
      WHERE d.id_clube = c.id_clube 
        AND d.ativo = TRUE 
        AND TIMESTAMPDIFF(YEAR, d.data_nascimento, CURDATE()) = c.idade_alvo) AS total_vinculados
+FROM Caderno c;
