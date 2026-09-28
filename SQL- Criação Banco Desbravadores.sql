@@ -100,10 +100,12 @@ CREATE TABLE Desbravador (
 CREATE TABLE Caderno (
   id_caderno INT PRIMARY KEY AUTO_INCREMENT,
   id_clube INT NOT NULL,
+  id_ciclo INT, -- Ciclo ao qual a classe esta sendo trabalhada (NULL = caderno do catalogo, ainda nao iniciado)
   nome VARCHAR(100) NOT NULL,
   idade_alvo INT NOT NULL,
   
-  CONSTRAINT fk_Caderno_Clube FOREIGN KEY (id_clube) REFERENCES Clube (id_clube)
+  CONSTRAINT fk_Caderno_Clube FOREIGN KEY (id_clube) REFERENCES Clube (id_clube),
+  CONSTRAINT fk_Caderno_Ciclo FOREIGN KEY (id_ciclo) REFERENCES Ciclo (id_ciclo)
 );
 
 CREATE TABLE Tarefa (

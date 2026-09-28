@@ -73,13 +73,13 @@ INSERT INTO Desbravador (id_clube, id_unidade, nome, data_nascimento, genero) VA
 (1, 4, 'Leticia Moraes', '2011-03-23', 'Feminino');
 
 
-INSERT INTO Caderno (id_clube, nome, idade_alvo) VALUES 
-(1, 'Amigo', 10),
-(1, 'Companheiro', 11),
-(1, 'Pesquisador', 12),
-(1, 'Pioneiro', 13),
-(1, 'Excursionista', 14),
-(1, 'Guia', 15);
+INSERT INTO Caderno (id_clube, id_ciclo, nome, idade_alvo) VALUES 
+(1, 1, 'Amigo', 10),
+(1, 1, 'Companheiro', 11),
+(1, 1, 'Pesquisador', 12),
+(1, 1, 'Pioneiro', 13),
+(1, 1, 'Excursionista', 14),
+(1, NULL, 'Guia', 15); -- Catálogo: ainda não vinculado a um ciclo
 
 -- Inserindo Tarefas do Caderno 'Amigo' (ID 1) - 6 Requisitos
 INSERT INTO Tarefa (id_clube, id_caderno, titulo, descricao, tipo_tarefa, pontuacao) VALUES
@@ -134,6 +134,27 @@ INSERT INTO Tarefa (id_clube, id_caderno, titulo, descricao, tipo_tarefa, pontua
 (1, 6, 'Primeiros Socorros Avançados', 'Saber realizar RCP e imobilização de fraturas.', 'CADERNO', 30),
 (1, 6, 'Mensagens aos Jovens', 'Leitura e resumo crítico do livro.', 'CADERNO', 20),
 (1, 6, 'Sobrevivência na Selva', 'Passar uma noite no mato com equipamento mínimo.', 'CADERNO', 40);
+
+-- Conselheiros de exemplo vinculados às unidades (perfil 2 = Conselheiro)
+-- Senha em texto puro apenas para mock local; a API grava com BCrypt
+INSERT INTO Usuario (id_clube, id_perfil, id_unidade, nome, email, senha) VALUES
+(1, 2, 1, 'Carla Menezes', 'conselheiro.tigresas@mock.com', 'mock123'),
+(1, 2, 3, 'João Almeida', 'conselheiro.panteras@mock.com', 'mock123');
+-- Unidades Leões (2) e Onças (4) ficam sem conselheiro (nome_conselheiro = NULL na view)
+
+-- Tarefas de clube atribuídas às unidades no Ciclo 1 (alimenta pontuação/ranking da view vw_resumo_unidades)
+INSERT INTO Unidade_Tarefa (id_unidade, id_tarefa, id_ciclo, status_kanban, data_conclusao) VALUES
+-- Tigresas (unidade 1): 2 concluídas (45 pts) + 1 a fazer
+(1, 1, 1, 'CONCLUIDA', '2026-03-10 18:00:00'),
+(1, 4, 1, 'CONCLUIDA', '2026-04-12 18:00:00'),
+(1, 8, 1, 'A FAZER', NULL),
+-- Leões (unidade 2): 1 concluída (15 pts) + 1 em andamento
+(2, 2, 1, 'CONCLUIDA', '2026-03-15 18:00:00'),
+(2, 5, 1, 'EM ANDAMENTO', NULL),
+-- Panteras (unidade 3): 2 concluídas (50 pts)
+(3, 16, 1, 'CONCLUIDA', '2026-04-20 18:00:00'),
+(3, 17, 1, 'CONCLUIDA', '2026-05-02 18:00:00'),
+(3, 18, 1, 'A FAZER', NULL);
 
 -- Convite para Conselheiro (Vinculado à Unidade 2 - Leões)
 INSERT INTO Convite (id_clube, id_perfil, id_unidade, email, token, status_convite, data_expiracao) VALUES 
