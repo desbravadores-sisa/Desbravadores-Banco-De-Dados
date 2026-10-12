@@ -1,3 +1,6 @@
+-- Garante leitura correta dos acentos em qualquer cliente MySQL
+SET NAMES utf8mb4;
+
 -- ==============================================================================
 -- RESET E CRIAÇÃO DO BANCO
 -- ==============================================================================
@@ -55,6 +58,7 @@ CREATE TABLE Usuario (
   nome VARCHAR(100) NOT NULL,
   email VARCHAR(100) NOT NULL UNIQUE,
   senha VARCHAR(256) NOT NULL,
+  telefone VARCHAR(20),
   ativo BOOLEAN DEFAULT TRUE,
   
   CONSTRAINT fk_Usuario_Clube FOREIGN KEY (id_clube) REFERENCES Clube (id_clube),
@@ -135,6 +139,7 @@ CREATE TABLE Unidade_Tarefa (
   status_kanban VARCHAR(45) DEFAULT 'A FAZER',
   prazo_entrega DATETIME,
   data_conclusao DATETIME,
+  pontuacao_concedida INT, -- ajuste da Diretoria na aprovação; NULL = usa Tarefa.pontuacao
   
   CONSTRAINT chk_Status_Unidade CHECK (status_kanban IN ('A FAZER', 'EM ANDAMENTO', 'EM REVISAO', 'CONCLUIDA')),
   CONSTRAINT fk_UniTarefa_Unidade FOREIGN KEY (id_unidade) REFERENCES Unidade (id_unidade),

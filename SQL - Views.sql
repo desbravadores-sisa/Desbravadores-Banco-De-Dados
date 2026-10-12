@@ -1,3 +1,6 @@
+-- Garante leitura correta dos acentos em qualquer cliente MySQL
+SET NAMES utf8mb4;
+
 USE clube_desbravadores;
 
 CREATE OR REPLACE VIEW vw_resumo_cadernos AS
@@ -49,7 +52,8 @@ SELECT
      ORDER BY us.id_usuario ASC
      LIMIT 1) AS nome_conselheiro,
     -- Pontuação = soma dos pontos das tarefas CONCLUIDA no ciclo ativo do clube
-    COALESCE(SUM(CASE WHEN ut.status_kanban = 'CONCLUIDA' THEN t.pontuacao ELSE 0 END), 0) AS pontuacao,
+    -- (pontuacao_concedida pela Diretoria tem precedência sobre Tarefa.pontuacao)
+    COALESCE(SUM(CASE WHEN ut.status_kanban = 'CONCLUIDA' THEN COALESCE(ut.pontuacao_concedida, t.pontuacao) ELSE 0 END), 0) AS pontuacao,
     COUNT(ut.id_unidade_tarefa) AS total_tarefas,
     COALESCE(SUM(CASE WHEN ut.status_kanban = 'CONCLUIDA' THEN 1 ELSE 0 END), 0) AS tarefas_concluidas
 FROM Unidade u

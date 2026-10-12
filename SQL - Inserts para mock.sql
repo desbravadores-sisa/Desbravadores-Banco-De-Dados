@@ -1,3 +1,6 @@
+-- Garante leitura correta dos acentos em qualquer cliente MySQL
+SET NAMES utf8mb4;
+
 USE clube_desbravadores;
 
 INSERT INTO Perfil(nome,descricao) VALUES
