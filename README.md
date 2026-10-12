@@ -6,6 +6,14 @@ Este é o **único** repositório que guarda artefatos de banco: scripts SQL, mo
 
 🎨 Protótipo de referência: [Figma Make — prototipo_versãofinal](https://www.figma.com/make/zdjDwsWCbkBmPXUXtR9QxT/prototipo_vers%C3%A3ofinal?t=SkffTCtZwgP5uuL2-1)
 
+## Novidades de 12/10/2026 — migração 003
+
+- `Desbravador_Caderno`: vínculo explícito desbravador ↔ caderno, com `data_conclusao` (histórico de cadernos concluídos). A migração preenche o vínculo inicial pela idade atual de cada desbravador ativo.
+- `Penalidade`: descontos de pontos lançados pela Diretoria (unidade, ciclo, pontos, motivo, quem lançou).
+- `Usuario.foto_url`: caminho da foto de perfil (o arquivo fica num volume da API, não no banco).
+- Views: `vw_resumo_unidades` desconta as penalidades do ciclo; `vw_resumo_cadernos` conta os vinculados pelo vínculo explícito.
+- O backend agora usa os nomes de tabela **exatamente** como no script, então o MySQL em Linux **não** precisa mais de `lower_case_table_names=1` (validado num MySQL 8.4 sem a opção).
+
 ## Em que pé estamos (11/10/2026)
 
 A branch **`consolidacao/sprint-final`** traz o schema usado pela versão integrada do sistema. Ela foi validada criando o banco do zero em MySQL 8.4 e rodando a API e o frontend sobre ele.
@@ -54,6 +62,7 @@ mysql -u root -p --default-character-set=utf8mb4 < "SQL - Inserts para mock.sql"
 ```bash
 mysql -u root -p clube_desbravadores < "SQL - Migracao 001 telefone usuario.sql"
 mysql -u root -p clube_desbravadores < "SQL - Migracao 002 pontuacao concedida.sql"
+mysql -u root -p --default-character-set=utf8mb4 clube_desbravadores < "SQL - Migracao 003 vinculo caderno, penalidade e foto.sql"
 mysql -u root -p clube_desbravadores < "SQL - Views.sql"
 ```
 
@@ -62,10 +71,10 @@ mysql -u root -p clube_desbravadores < "SQL - Views.sql"
 ```bash
 docker run -d --name desbrav-mysql -e MYSQL_ROOT_PASSWORD=<senha-local> -p 3307:3306 \
   -v "<pasta com 01_schema.sql, 02_views.sql, 03_inserts.sql>:/docker-entrypoint-initdb.d:ro" \
-  mysql:8.4 --lower-case-table-names=1
+  mysql:8.4
 ```
 
-O parâmetro `--lower-case-table-names=1` é **obrigatório** em servidores Linux: o schema usa `Usuario`, `Convite`…, mas o Hibernate consulta em minúsculas.
+Desde 12/10 o backend consulta as tabelas com a mesma capitalização do script (`Usuario`, `Convite`…), então `--lower-case-table-names=1` deixou de ser necessário.
 
 ## Integração com o backend
 
@@ -82,6 +91,5 @@ Configure a API (`Desbravadores-BackEnd-Java/APIDesbravadores/.env`) apontando p
 
 1. PR `consolidacao/sprint-final` → `main` (ele deve ser o **primeiro** a ser mergeado, antes do backend e do front).
 2. Atualizar a `Modelagem v3.mwb` com `telefone` e `pontuacao_concedida`.
-3. Decidir junto com o backend a **capitalização dos nomes de tabela**, para permitir deploy em Linux sem `lower_case_table_names`.
-4. Avaliar, a partir do protótipo: vínculo explícito entre desbravador e caderno (hoje é por idade), registro de **descontos** de pontos (o dashboard da unidade mostra "ganhos e descontos") e histórico de cadernos concluídos por desbravador.
+3. ~~Capitalização dos nomes de tabela; vínculo explícito; descontos; histórico de cadernos concluídos~~ ✅ 12/10 (migração 003). Falta levar `Desbravador_Caderno`, `Penalidade` e `foto_url` para a `Modelagem v3.mwb`.
 5. Remover do script de criação a senha fixa do usuário MySQL da aplicação; configurá-la por ambiente.

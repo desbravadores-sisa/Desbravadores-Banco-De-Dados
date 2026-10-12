@@ -19,12 +19,12 @@ SELECT
      FROM Tarefa t 
      WHERE t.id_caderno = c.id_caderno 
        AND t.tipo_tarefa = 'CADERNO') AS total_requisitos,
-    -- 3. Conta os desbravadores do clube que têm a idade exata do caderno (Vinculados)
-    (SELECT COUNT(d.id_desbravador) 
-     FROM Desbravador d 
-     WHERE d.id_clube = c.id_clube 
-       AND d.ativo = TRUE 
-       AND TIMESTAMPDIFF(YEAR, d.data_nascimento, CURDATE()) = c.idade_alvo) AS total_vinculados,
+    -- 3. Desbravadores ativos vinculados ao caderno (vínculo explícito definido pela Diretoria)
+    (SELECT COUNT(dc.id_desbravador)
+     FROM Desbravador_Caderno dc
+     JOIN Desbravador d ON d.id_desbravador = dc.id_desbravador
+     WHERE dc.id_caderno = c.id_caderno
+       AND d.ativo = TRUE) AS total_vinculados,
     -- 4. Datas e status derivados do ciclo vinculado ao caderno (Caderno.id_ciclo -> Ciclo)
     ci.data_inicio,
     ci.data_fim,
@@ -51,9 +51,16 @@ SELECT
        AND UPPER(p.nome) = 'CONSELHEIRO'
      ORDER BY us.id_usuario ASC
      LIMIT 1) AS nome_conselheiro,
-    -- Pontuação = soma dos pontos das tarefas CONCLUIDA no ciclo ativo do clube
+    -- Pontuação = pontos das tarefas CONCLUIDA no ciclo ativo do clube
     -- (pontuacao_concedida pela Diretoria tem precedência sobre Tarefa.pontuacao)
-    COALESCE(SUM(CASE WHEN ut.status_kanban = 'CONCLUIDA' THEN COALESCE(ut.pontuacao_concedida, t.pontuacao) ELSE 0 END), 0) AS pontuacao,
+    -- menos as penalidades (descontos) lançadas no mesmo ciclo
+    COALESCE(SUM(CASE WHEN ut.status_kanban = 'CONCLUIDA' THEN COALESCE(ut.pontuacao_concedida, t.pontuacao) ELSE 0 END), 0)
+      - COALESCE((SELECT SUM(p.pontos) FROM Penalidade p
+                  WHERE p.id_unidade = u.id_unidade
+                    AND p.id_ciclo = (SELECT ci.id_ciclo FROM Ciclo ci
+                                      WHERE ci.id_clube = u.id_clube AND ci.ativo = TRUE
+                                      ORDER BY ci.data_inicio DESC, ci.id_ciclo DESC
+                                      LIMIT 1)), 0) AS pontuacao,
     COUNT(ut.id_unidade_tarefa) AS total_tarefas,
     COALESCE(SUM(CASE WHEN ut.status_kanban = 'CONCLUIDA' THEN 1 ELSE 0 END), 0) AS tarefas_concluidas
 FROM Unidade u

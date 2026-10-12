@@ -166,3 +166,13 @@ INSERT INTO Convite (id_clube, id_perfil, id_unidade, email, token, status_convi
 -- Convite para Diretoria (Sem unidade vinculada)
 INSERT INTO Convite (id_clube, id_perfil, id_unidade, email, token, status_convite, data_expiracao) VALUES 
 (1, 1, NULL, 'diretor.mock@gmail.com', 't0k3nM0ckD1r3t0r14B4s364g3r4d0Ex3mpl0', 'PENDENTE', '2027-09-25 23:59:59');
+
+-- Vínculo inicial desbravador ↔ caderno pela idade (depois a Diretoria ajusta em "Ver Caderno")
+INSERT INTO Desbravador_Caderno (id_desbravador, id_caderno)
+SELECT d.id_desbravador, c.id_caderno
+FROM Desbravador d
+JOIN Caderno c ON c.id_clube = d.id_clube
+             AND c.idade_alvo = TIMESTAMPDIFF(YEAR, d.data_nascimento, CURDATE())
+WHERE d.ativo = TRUE
+  AND NOT EXISTS (SELECT 1 FROM Desbravador_Caderno x
+                  WHERE x.id_desbravador = d.id_desbravador AND x.id_caderno = c.id_caderno);

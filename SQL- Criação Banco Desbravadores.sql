@@ -59,6 +59,7 @@ CREATE TABLE Usuario (
   email VARCHAR(100) NOT NULL UNIQUE,
   senha VARCHAR(256) NOT NULL,
   telefone VARCHAR(20),
+  foto_url VARCHAR(500), -- caminho do arquivo servido pela API (/arquivos/...)
   ativo BOOLEAN DEFAULT TRUE,
   
   CONSTRAINT fk_Usuario_Clube FOREIGN KEY (id_clube) REFERENCES Clube (id_clube),
@@ -209,6 +210,39 @@ CREATE TABLE Notificacao (
   
   CONSTRAINT fk_Notificacao_Usuario FOREIGN KEY (id_usuario) REFERENCES Usuario (id_usuario),
   CONSTRAINT fk_Notificacao_Clube FOREIGN KEY (id_clube) REFERENCES Clube (id_clube)
+);
+
+-- ==============================================================================
+-- 7. VÍNCULO EXPLÍCITO DESBRAVADOR ↔ CADERNO, PENALIDADES E FOTO DE PERFIL
+-- ==============================================================================
+-- Vínculo definido pela Diretoria em "Ver Caderno". data_conclusao preenchida quando o
+-- desbravador cumpre todos os requisitos do caderno (histórico de "Cadernos concluídos").
+CREATE TABLE Desbravador_Caderno (
+  id_desbravador_caderno INT PRIMARY KEY AUTO_INCREMENT,
+  id_desbravador INT NOT NULL,
+  id_caderno INT NOT NULL,
+  data_vinculo DATETIME DEFAULT CURRENT_TIMESTAMP,
+  data_conclusao DATETIME,
+
+  CONSTRAINT uq_Desbravador_Caderno UNIQUE (id_desbravador, id_caderno),
+  CONSTRAINT fk_DesbCaderno_Desbravador FOREIGN KEY (id_desbravador) REFERENCES Desbravador (id_desbravador),
+  CONSTRAINT fk_DesbCaderno_Caderno FOREIGN KEY (id_caderno) REFERENCES Caderno (id_caderno)
+);
+
+-- Desconto de pontos lançado pela Diretoria (com motivo), descontado no ranking do ciclo.
+CREATE TABLE Penalidade (
+  id_penalidade INT PRIMARY KEY AUTO_INCREMENT,
+  id_unidade INT NOT NULL,
+  id_ciclo INT NOT NULL,
+  id_usuario INT, -- quem lançou
+  pontos INT NOT NULL,
+  motivo VARCHAR(255) NOT NULL,
+  data_registro DATETIME DEFAULT CURRENT_TIMESTAMP,
+
+  CONSTRAINT chk_Penalidade_Pontos CHECK (pontos > 0),
+  CONSTRAINT fk_Penalidade_Unidade FOREIGN KEY (id_unidade) REFERENCES Unidade (id_unidade),
+  CONSTRAINT fk_Penalidade_Ciclo FOREIGN KEY (id_ciclo) REFERENCES Ciclo (id_ciclo),
+  CONSTRAINT fk_Penalidade_Usuario FOREIGN KEY (id_usuario) REFERENCES Usuario (id_usuario)
 );
 
 -- ==============================================================================
